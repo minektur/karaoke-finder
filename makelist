@@ -1,0 +1,17 @@
+#!/bin/sh
+
+#initial list for the DB
+#giant pile of shell glop to get a file list for easy import - should turn in to 3 columns in tsv
+
+(cd ~/Downloads/kar/all; find [A-Z] 999) | grep -i cdg | sort > /tmp/aaa 
+
+
+
+(cd ~/Downloads/kar/all; find [A-Z] 999) | grep -i cdg | sort | awk -F / '{print $3 "\t" $4}' | sed 's/-/\t/' > /usr/local/fred/kar/karaoke-finder/filelist.tsv
+
+(cd ~/Downloads/kar/all; find [A-Z] 999) | grep -i cdg | sort | awk -F / '{print $3 "\t" $4}' | sed 's/-/\t/' > /usr/local/fred/kar/karaoke-finder/filelist.tsv
+
+
+
+#todo gotta do something special for the frozen and disney directories
+# or maybe just rename/cleanse/normalize the actual files...  both tedious
