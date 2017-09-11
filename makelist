@@ -5,11 +5,26 @@
 
 (cd ~/Downloads/kar/all; find [A-Z] 999) | grep -i cdg | sort > /tmp/aaa 
 
+#directory
+awk -F / '{print $1}' < /tmp/aaa > /tmp/aaa1
+
+#track
+awk -F / '{print $2}' < /tmp/aaa > /tmp/aaa2
+
+#artist
+sed 's/- .*//' < /tmp/aaa2 > /tmp/aaa3
+
+#songname 
+grep -o ' - .*' /tmp/aaa2 | cut -c4- | sed 's/\.cdg//' > /tmp/aaa4
 
 
-(cd ~/Downloads/kar/all; find [A-Z] 999) | grep -i cdg | sort | awk -F / '{print $3 "\t" $4}' | sed 's/-/\t/' > /usr/local/fred/kar/karaoke-finder/filelist.tsv
+#paste together
+echo "Dir\tPathname\tArtist\tTitle" > /usr/local/fred/kar/karaoke-finder/filelist.tsv
+paste /tmp/aaa1 /tmp/aaa2 /tmp/aaa3 /tmp/aaa4 >> /usr/local/fred/kar/karaoke-finder/filelist.tsv
 
-(cd ~/Downloads/kar/all; find [A-Z] 999) | grep -i cdg | sort | awk -F / '{print $3 "\t" $4}' | sed 's/-/\t/' > /usr/local/fred/kar/karaoke-finder/filelist.tsv
+cp /usr/local/fred/kar/karaoke-finder/filelist.tsv ~/Downloads/
+
+#rm /tmp/aaa1 /tmp/aaa2 /tmp/aaa3
 
 
 
