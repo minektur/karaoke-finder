@@ -122,7 +122,7 @@ def playfile(filedir='', track=''):
     if not os.path.isfile(sourcefile):
         return copy_failure("track not found")
 
-    return static_file(track.replace(".cdg",".mp3"), sourcedir,  mimetype="audio/mpeg")
+    return static_file(track.replace(".cdg",".mp3"), root=sourcedir,  mimetype="audio/mpeg")
     #return static_file("null", "dev",  mimetype="audio/mpeg")
 
 
