@@ -3,10 +3,9 @@
 import os
 import shutil
 
-from bottle import route, run, template, error, static_file
-
-#Where the web stuff lives
-basedir = "webroot"
+from bottle import Bottle, static_file, template
+from waitress import serve
+myapp = Bottle()
 
 #where the karaoke files live
 karbase = "/home/chronos/user/Downloads/kar/all"
@@ -25,24 +24,23 @@ def find_usb():
     return("/dev/sdb1", "/media/removable/KARAOKE")
 
 
-#@error(404)
-#def fourofour(obj):
-#    return root()
+@myapp.error(404)
+def fourofour(obj):
+    return root()
 
 #https://www.appsheet.com/start/8c032ee2-7eb2-490e-9059-26a9c650bb04
 #https://www.appsheet.com/preview/8c032ee2-7eb2-490e-9059-26a9c650bb04
 
-@route("/")
+@myapp.route("/")
 def root():
     return """<html> Return to the song search by closing this tab, or click here <a href="https://www.appsheet.com/start/8c032ee2-7eb2-490e-9059-26a9c650bb04"> Karaoke Song Finder </a></html>"""
 
 
-@route("/unmount")
+@myapp.route("/unmount")
 def unmount():
    dev, usbpath = find_usb() 
    # do nothing for now - no command-line way to eject usb for chromeos
    
-
 
 def copy_failure(msg):
     return template("Error: {{mmm}}", mmm=msg)
@@ -51,7 +49,7 @@ def copy_success(track):
     return """<html> <h1> Song<br><br>%s<br><br>successfully copied.  Return to  <a href="https://www.appsheet.com/preview/8c032ee2-7eb2-490e-9059-26a9c650bb04"> Karaoke Song Finder </a></h1></html>""" % (track)
 
 
-@route("/copyfile/<filedir>/<track>")
+@myapp.route("/copyfile/<filedir>/<track>")
 def copyfile(filedir='', track=''):
     """ takes a directory (e.g. "B") and a track name 
     (e.g. "Banarama - Venus.cdg")
@@ -97,7 +95,7 @@ def copyfile(filedir='', track=''):
     
     return copy_success(track)
 
-@route("/playfile/<filedir>/<track>")
+@myapp.route("/playfile/<filedir>/<track>")
 def playfile(filedir='', track=''):
     """ takes a directory and track name and sends/plays/streams it as mp3 """ 
     #cleanse filename
@@ -123,7 +121,8 @@ def playfile(filedir='', track=''):
         return copy_failure("track not found")
 
     return static_file(track.replace(".cdg",".mp3"), root=sourcedir,  mimetype="audio/mpeg")
-    #return static_file("null", "dev",  mimetype="audio/mpeg")
 
 
-run(host='localhost', port=2222, debug=True)
+serve(myapp, listen="*:2222")
+
+     
